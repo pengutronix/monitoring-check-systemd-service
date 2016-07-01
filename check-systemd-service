@@ -16,7 +16,7 @@ except ImportError as e:
 try:
         from gi.repository.Gio import DBusProxy, BusType
 except ImportError as e:
-    print("Please install python-gi")
+    print("Please install python3-gi")
     raise e
 
 _log = logging.getLogger('nagiosplugin')
