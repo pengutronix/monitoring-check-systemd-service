@@ -63,11 +63,11 @@ class Systemd_Service(nagiosplugin.Resource):
         })
 
     def normalize(self):
-        if self.unit.find('.') < 0:
+        if '.' in self.unit:
+            _log.debug('Found \'.\' in ServiceName, so assuming you know what youre asking for')
+        else:
             self.unit = self.unit + '.service'
             _log.debug('Normalized unitname to check to %r', self.unit)
-        else:
-            _log.debug('Found \'.\' in ServiceName, so assuming you know what youre asking for')
 
     @property
     def name(self):
