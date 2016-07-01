@@ -21,12 +21,6 @@ except ImportError as e:
 
 _log = logging.getLogger('nagiosplugin')
 
-class E_MyException(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return "do some things with value %r" %repr(self.value)
-
 class Systemd_Service(nagiosplugin.Resource):
     """One Systemd Service"""
 
