@@ -25,13 +25,11 @@ class Systemd_Service(nagiosplugin.Resource):
     """One Systemd Service"""
 
     def __init__(self, **kwords):
-        _log.debug('Initializing Systemd_Service with %r', (kwords))
         for key, value in kwords.items():
             self.__setattr__(key, value)
-        self.normalize()
 
     def connect_systemd(self):
-        # initializing systemd dbus connection
+        """ initializing systemd dbus connection """
         systemd = DBusProxy.new_for_bus_sync(BusType.SYSTEM,
                                              0,
                                              None,
@@ -53,26 +51,18 @@ class Systemd_Service(nagiosplugin.Resource):
                                              'org.freedesktop.systemd1.Unit',
                                              None)
         self.service = service
-        self.activeStateD = collections.defaultdict(lambda: None, {
-            'active':       1.0,
-            'reloading':    0.9,
-            'activating':   0.8,
-            'deactivating': 0.4,
-            'inactive':     0.0,
-            'failed':       0.0,
-        })
 
     def normalize(self):
         if '.' in self.unit:
-            _log.debug('Found \'.\' in ServiceName, so assuming you know what youre asking for')
+            _log.debug('Found \'.\' in ServiceName %r, so assuming you know what youre asking for', self.unit)
         else:
             self.unit = self.unit + '.service'
-            _log.debug('Normalized unitname to check to %r', self.unit)
+            _log.debug('Normalized unitname to check for %r', self.unit)
 
     @property
     def name(self):
         """formatting the Testname (will be formatted as uppercase letters)"""
-        return "SYSTEMD SERVICE %s SERVICESTATE" % (self.unit.split('.service')[0])
+        return "SYSTEMD SERVICE %s" % (self.unit.split('.service')[0])
 
 
     def activestate(self):
@@ -115,17 +105,22 @@ class Systemd_Service(nagiosplugin.Resource):
 
     def probe(self):
         """ Create check metric for Systemd Service"""
+        self.normalize()
         self.connect_systemd()
-        self.running_service_found = self.activeStateD[self.activestate()]
         self.service_state = (self.activestate(), self.substate())
         yield  nagiosplugin.Metric('service_state', self.service_state)
+
 
 class Service_Context(nagiosplugin.Context):
 
     def evaluate(self, metric, recource):
         # possible Values are:
-        # nagiosplugin.Ok, nagiosplugin.Warn, nagiosplugin.Critical, nagiosplugin.Unknown
-        resultD = collections.defaultdict( lambda: nagiosplugin.Unknown, {
+        # nagiosplugin.Ok,
+        # nagiosplugin.Warn,
+        # nagiosplugin.Critical,
+        # nagiosplugin.Unknown
+        resultD = collections.defaultdict( lambda: nagiosplugin.Unknown,
+        {
             'active':       nagiosplugin.Ok,
             'reloading':    nagiosplugin.Ok,
             'activating':   nagiosplugin.Ok,
@@ -140,17 +135,17 @@ class Service_Context(nagiosplugin.Context):
 def main():
     argp = argparse.ArgumentParser(description=__doc__,
                       formatter_class=argparse.RawTextHelpFormatter,
-           )
+    )
+    argp.add_argument('unit', help='Check this Unit')
     argp.add_argument('-v', '--verbose', action='count', default=0,
                       help='increase output verbosity (use up to 3 times)')
     argp.add_argument('-t', '--timeout', default=10,
                       help='abort execution after TIMEOUT seconds')
-    argp.add_argument('unit', help='Check this Unit')
     args = argp.parse_args()
-    _log.debug('Found arguments %r', args)
     check = nagiosplugin.Check(
         Systemd_Service(**vars(args)),
-        Service_Context('service_state', fmt_metric="ServiceState is {value[0]}({value[1]})"),
+        Service_Context('service_state',
+                        fmt_metric="ServiceState is {value[0]}({value[1]})"),
     )
     check.main(args.verbose, args.timeout)
 
