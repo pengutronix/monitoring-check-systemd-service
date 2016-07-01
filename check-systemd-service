@@ -118,27 +118,9 @@ class Systemd_Service(nagiosplugin.Resource):
         self.connect_systemd()
         self.running_service_found = self.activeStateD[self.activestate()]
         self.service_state = (self.activestate(), self.substate())
-        #yield  nagiosplugin.Metric('running_service_state', self.running_service_found, min=0, max=1)
         yield  nagiosplugin.Metric('service_state', self.service_state)
 
-class Service_Fmt_Metric(object):
-    """print a message for a bool-metric  """
 
-    def __init__(self, msg_success, msg_fail):
-        self.msg_success = msg_success
-        self.msg_fail = msg_fail
-
-    def __call__(self, metric, context):
-        _log.debug('Value: %r UOM: %r', metric.value, metric.uom)
-
-        if metric.value:
-            return self.msg_success.format(v=metric.value, u=metric.uom)
-        else:
-            return self.msg_fail.format(v=metric.value, u=metric.uom)
-
-
-class Service_Result(nagiosplugin.Result):
-    pass
 
 @nagiosplugin.guarded
 def main():
@@ -154,12 +136,6 @@ def main():
     _log.debug('Found arguments %r', args)
     check = nagiosplugin.Check(
         Systemd_Service(**vars(args)),
-        #nagiosplugin.ScalarContext('running_service_found',
-        #                           warning='0.2:1',
-        #                           critical='0.8:1',
-        #                           fmt_metric=Bool_Fmt_Metric('Running service found!',
-        #                                                      'Service not running!')
-        #),        
         nagiosplugin.Context('service_state',
                              fmt_metric=Service_Fmt_Metric('Service is running. State is {v[0]}, {v[1]}',
                                                            'Service is broken! State is {v[0]}, {v[1]}')
