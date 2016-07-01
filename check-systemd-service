@@ -120,6 +120,20 @@ class Systemd_Service(nagiosplugin.Resource):
         self.service_state = (self.activestate(), self.substate())
         yield  nagiosplugin.Metric('service_state', self.service_state)
 
+class Service_Context(nagiosplugin.Context):
+
+    def evaluate(self, metric, recource):
+        # possible Values are:
+        # nagiosplugin.Ok, nagiosplugin.Warn, nagiosplugin.Critical, nagiosplugin.Unknown
+        resultD = collections.defaultdict( lambda: nagiosplugin.Unknown, { 
+            'active':       nagiosplugin.Ok,
+            'reloading':    nagiosplugin.Ok,
+            'activating':   nagiosplugin.Ok,
+            'deactivating': nagiosplugin.Warn,
+            'inactive':     nagiosplugin.Critical,
+            'failed':       nagiosplugin.Critical,
+        })
+        return self.result_cls(resultD[metric.value[0]], metric=metric)
 
 
 @nagiosplugin.guarded
@@ -136,10 +150,7 @@ def main():
     _log.debug('Found arguments %r', args)
     check = nagiosplugin.Check(
         Systemd_Service(**vars(args)),
-        nagiosplugin.Context('service_state',
-                             fmt_metric=Service_Fmt_Metric('Service is running. State is {v[0]}, {v[1]}',
-                                                           'Service is broken! State is {v[0]}, {v[1]}')
-        ),        
+        Service_Context('service_state', fmt_metric="ServiceState is {value[0]}({value[1]})")
     )
     check.main(args.verbose, args.timeout)
 
