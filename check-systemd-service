@@ -5,9 +5,6 @@
 
 import argparse
 import logging
-import subprocess
-import os
-import datetime
 import collections
 
 try:
