@@ -1,14 +1,17 @@
-Whats this?
-===========
+# Whats this?
+
 This script is intended for icinga/nagios/icinga2 to check the state of a
 systemd service. We check the ServiceState and the Substate.
 
-optional features (future)
---------------------------
+## install
+
+  apt-get install python3-nagiosplugin python3-gi
+
+## optional features (future)
+
 It is thinkable to check for every systemd service property.
 
-example code
-------------
+## example code
 
 from gi.repository import GLib, Gio
 
@@ -18,8 +21,8 @@ apache2 = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SYSTEM, 0, None,  'org.free
 
 apache2.get_cached_property('ActiveState').unpack()
 -> 'active'
- apache2.get_cached_property('SubState').unpack()
- -> 'running'
+apache2.get_cached_property('SubState').unpack()
+-> 'running'
 
- apache2.get_cached_property_names()
- -> Liste all systemd-properties
+apache2.get_cached_property_names()
+-> Liste all systemd-properties
