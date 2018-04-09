@@ -1,28 +1,42 @@
-# Whats this?
+# Whats this and why?
 
 This script is intended for icinga/nagios/icinga2 to check the state of a
 systemd service. We check the ServiceState and the Substate.
 
-## install
+This tools uses dbus to gather needed informations, as systemd-developer
+Lennart Poettering says it is the right way to do and cli output is not stable and should not be parsed.
 
-  apt-get install python3-nagiosplugin python3-gi
+https://github.com/systemd/systemd/issues/83
+
+## How to install?
+
+    git clone https://github.com/pengutronix/monitoring-check-systemd-service.git
+    apt-get install python3-nagiosplugin python3-gi
+
+
+## How to use?
+
+    > ./check-systemd-service -h
+    usage: check-systemd-service [-h] [-v] [-t TIMEOUT] unit
+
+    Nagios plugin to check a systemd service on different properties
+
+    positional arguments:
+      unit                  Check this Unit
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --verbose         increase output verbosity (use up to 3 times)
+      -t TIMEOUT, --timeout TIMEOUT
+			    abort execution after TIMEOUT seconds
+
+
+    > ./check-systemd-service -t 3 systemd-logind 
+    SYSTEMD SERVICE SYSTEMD-LOGIND OK - ServiceState is active(running)
+
 
 ## optional features (future)
 
-It is thinkable to check for every systemd service property.
+It could check for every systemd service property. The plugin has access to the whole systemd-dbus dataset without parsing any CLI output.
 
-## example code
 
-from gi.repository import GLib, Gio
-
-systemd = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SYSTEM, 0, None,  'org.freedesktop.systemd1',  '/org/freedesktop/systemd1',  'org.freedesktop.systemd1.Manager', None)
-
-apache2 = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SYSTEM, 0, None,  'org.freedesktop.systemd1',  systemd.LoadUnit('(s)', 'apache2.service'),  'org.freedesktop.systemd1.Unit', None)
-
-apache2.get_cached_property('ActiveState').unpack()
--> 'active'
-apache2.get_cached_property('SubState').unpack()
--> 'running'
-
-apache2.get_cached_property_names()
--> Liste all systemd-properties
