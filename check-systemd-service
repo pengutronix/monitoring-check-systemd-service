@@ -21,6 +21,16 @@ except ImportError as e:
 
 _log = logging.getLogger('nagiosplugin')
 
+class Systemd:
+    """Systemd access"""
+    dbus = DBusProxy.new_for_bus_sync(BusType.SYSTEM,
+                                      0,
+                                      None,
+                                      'org.freedesktop.systemd1',
+                                      '/org/freedesktop/systemd1',
+                                      'org.freedesktop.systemd1.Manager',
+                                      None)
+
 class Systemd_Service(nagiosplugin.Resource):
     """One Systemd Service"""
 
@@ -30,15 +40,8 @@ class Systemd_Service(nagiosplugin.Resource):
 
     def connect_systemd(self):
         """ initializing systemd dbus connection """
-        systemd = DBusProxy.new_for_bus_sync(BusType.SYSTEM,
-                                             0,
-                                             None,
-                                             'org.freedesktop.systemd1',
-                                             '/org/freedesktop/systemd1',
-                                             'org.freedesktop.systemd1.Manager',
-                                             None)
         try:
-            loadedUnit = systemd.LoadUnit('(s)', self.unit)
+            loadedUnit = Systemd.dbus.LoadUnit('(s)', self.unit)
         except Exception as e:
             _log.error(e)
             raise e
@@ -136,7 +139,7 @@ def main():
     argp = argparse.ArgumentParser(description=__doc__,
                       formatter_class=argparse.RawTextHelpFormatter,
     )
-    argp.add_argument('unit', help='Check this Unit')
+    argp.add_argument('unit', help='Check this Unit', default=None)
     argp.add_argument('-v', '--verbose', action='count', default=0,
                       help='increase output verbosity (use up to 3 times)')
     argp.add_argument('-t', '--timeout', default=10,
