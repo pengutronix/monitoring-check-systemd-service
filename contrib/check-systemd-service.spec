@@ -12,6 +12,7 @@ Source0:       https://github.com/joernott/monitoring-check-systemd-service/arch
 
 License:       BSD
 URL:           https://github.com/joernott/monitoring-check-systemd-service
+Requires:      rh-python36
 Requires:      python36-gobject
 Requires:      python3-nagiosplugin
 
