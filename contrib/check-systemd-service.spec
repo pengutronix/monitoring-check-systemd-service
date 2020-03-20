@@ -1,4 +1,4 @@
-%define        version   1.1.0
+%define        version   1.1.1
 %define        plugindir /usr/lib64/nagios/plugins/
 Name:          check-systemd-service
 Version:       %{version}
