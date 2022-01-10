@@ -1,0 +1,21 @@
+Source: monitoring-plugin-systemd-service
+Section: net
+Priority: optional
+Maintainer: Björn Lässig <b.laessig@pengutronix.de>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.5.1
+Homepage: https://github.com/pengutronix/monitoring-check-systemd-service
+Vcs-Browser: https://github.com/pengutronix/monitoring-check-systemd-service
+Vcs-Git: https://github.com/pengutronix/monitoring-check-systemd-service.git
+Rules-Requires-Root: no
+
+Package: monitoring-plugin-systemd-service
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3-nagiosplugin, python3-gi
+Description: systemd monitoring script using dbus
+ This script is intended for icinga/nagios/icinga2 to check the state
+ of a systemd service. We check the ServiceState and the Substate.
+ .
+ This tools uses dbus to gather needed informations, as systemd-developer
+ Lennart Poettering says it is the right way to do and cli output is not
+ stable and should not be parsed.

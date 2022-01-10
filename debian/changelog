@@ -1,0 +1,5 @@
+monitoring-plugin-systemd-service (1.1-1) unstable; urgency=medium
+
+  * Initial release
+
+ -- Björn Lässig <b.laessig@pengutronix.de>  Mon, 10 Jan 2022 15:50:08 +0100
