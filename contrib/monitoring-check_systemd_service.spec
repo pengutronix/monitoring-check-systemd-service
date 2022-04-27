@@ -1,15 +1,11 @@
-%define        version   1.1.1
-%define        plugindir /usr/lib64/nagios/plugins/
-Name:          check-systemd-service
+Name:          monitoring-check_systemd_service
 Version:       %{version}
-Release:       1
+Release:       %{release}
 Epoch:         1
 Summary:       Nagios/Icinga check for systemd services
 AutoReqProv:   no
-BuildRoot:     %buildroot
 BuildArch:     noarch
 Source0:       https://github.com/joernott/monitoring-check-systemd-service/archive/v%{version}.tar.gz#/monitoring-check-systemd-service-%{version}.tar.gz
-
 License:       BSD
 URL:           https://github.com/joernott/monitoring-check-systemd-service
 Requires:      rh-python36
@@ -25,17 +21,16 @@ Lennart Poettering says it is the right way to do and cli output is not stable
 and should not be parsed.
 
 %prep
-%autosetup -n monitoring-check-systemd-service-%{version}
+%setup -q monitoring-check-systemd-service-%{version}
 
-%build
 %install
-mkdir -p $RPM_BUILD_ROOT%{plugindir}
-mv %{_builddir}/monitoring-check-systemd-service-%{version}/check-systemd-service $RPM_BUILD_ROOT%{plugindir}/
-rm -rf $RPM_BUILD_ROOT/monitoring-check-systemd-service-%{version}
-
-%clean
-rm -rf $RPM_BUILD_ROOT/*
+mkdir -p "$RPM_BUILD_ROOT/usr/lib64/nagios/plugins"
+cp check-systemd-service "$RPM_BUILD_ROOT/usr/lib64/nagios/plugins/"
 
 %files
-%attr(755,root,root) %{plugindir}/check-systemd-service
+%attr(755,root,root) /usr/lib64/nagios/plugins/check-systemd-service
+
+%changelog
+* Wed Apr 27 2022 Joern Ott <joern.ott@ott-consult.de>
+- Standardize builds for plugins
 
