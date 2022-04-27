@@ -1,4 +1,4 @@
-Name:          monitoring-check_systemd_service
+Name:          monitoring-check-systemd-service
 Version:       %{version}
 Release:       %{release}
 Epoch:         1
