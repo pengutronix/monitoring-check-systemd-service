@@ -1,6 +1,6 @@
 Name:          monitoring-check-systemd-service
 Version:       %{version}
-Release:       %{release}
+Release:       %{release}%{?dist}
 Epoch:         1
 Summary:       Nagios/Icinga check for systemd services
 AutoReqProv:   no
@@ -8,9 +8,16 @@ BuildArch:     noarch
 Source0:       https://github.com/joernott/monitoring-check-systemd-service/archive/v%{version}.tar.gz#/monitoring-check-systemd-service-%{version}.tar.gz
 License:       BSD
 URL:           https://github.com/joernott/monitoring-check-systemd-service
+%if 0%{?rhel} == 8
+Requires:      python36
+Requires:      python3-gobject
+Requires:      python3-nagiosplugin
+%else
 Requires:      rh-python36
 Requires:      python36-gobject
 Requires:      python3-nagiosplugin
+%endif
+
 
 %description
 This script is intended for icinga/nagios/icinga2 to check the state of a
