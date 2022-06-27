@@ -1,6 +1,6 @@
 Name:          monitoring-check-systemd-service
 Version:       %{version}
-Release:       %{release}%{?dist}
+Release:       %{release}.el%{?rhel}
 Epoch:         1
 Summary:       Nagios/Icinga check for systemd services
 AutoReqProv:   no
