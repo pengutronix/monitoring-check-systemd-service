@@ -10,7 +10,7 @@ Vcs-Git: https://github.com/pengutronix/monitoring-check-systemd-service.git
 Rules-Requires-Root: no
 
 Package: monitoring-plugin-systemd-service
-Architecture: any
+Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python3-nagiosplugin, python3-gi
 Description: systemd monitoring script using dbus
  This script is intended for icinga/nagios/icinga2 to check the state
